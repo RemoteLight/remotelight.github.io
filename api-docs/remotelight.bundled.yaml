@@ -1,0 +1,427 @@
+openapi: 3.0.3
+info:
+  title: RemoteLight API
+  description: REST API for interacting with a RemoteLight instance.
+  license:
+    name: GPL-3.0
+    url: 'https://www.gnu.org/licenses/gpl-3.0.txt'
+  contact:
+    name: GitHub
+    url: 'https://github.com/RemoteLight/RemoteLight'
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /outputs:
+    get:
+      summary: Get all outputs
+      tags:
+        - Outputs
+      responses:
+        '200':
+          description: A list of all stored outputs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OutputResponseModel'
+    post:
+      summary: Create new output
+      tags:
+        - Outputs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutputRequestModel'
+      responses:
+        '201':
+          $ref: '#/components/responses/OutputResponseModel'
+  '/outputs/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get single output
+      tags:
+        - Outputs
+      responses:
+        '200':
+          $ref: '#/components/responses/OutputResponseModel'
+        '400':
+          $ref: '#/components/responses/OutputMissingIdError'
+        '404':
+          $ref: '#/components/responses/OutputNotFoundError'
+    patch:
+      summary: Update output
+      tags:
+        - Outputs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutputRequestModel'
+      responses:
+        '200':
+          $ref: '#/components/responses/OutputResponseModel'
+        '400':
+          $ref: '#/components/responses/OutputMissingIdError'
+        '404':
+          $ref: '#/components/responses/OutputNotFoundError'
+    delete:
+      summary: Delete output
+      tags:
+        - Outputs
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Output removed
+        '400':
+          $ref: '#/components/responses/OutputMissingIdError'
+        '404':
+          $ref: '#/components/responses/OutputNotFoundError'
+  /scenes:
+    get:
+      summary: Get all scenes
+      tags:
+        - Scenes
+      responses:
+        '200':
+          description: A list of all stored scenes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SceneResponseModel'
+    post:
+      summary: Create new scene
+      tags:
+        - Scenes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SceneRequestModel'
+      responses:
+        '201':
+          $ref: '#/components/responses/SceneResponseModel'
+  '/scenes/{id}':
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get single scenes
+      tags:
+        - Scenes
+      responses:
+        '200':
+          $ref: '#/components/responses/SceneResponseModel'
+        '400':
+          $ref: '#/components/responses/OutputMissingIdError'
+        '404':
+          $ref: '#/components/responses/SceneNotFoundError'
+    patch:
+      summary: Update scene
+      tags:
+        - Scenes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SceneRequestModel'
+      responses:
+        '200':
+          $ref: '#/components/responses/SceneResponseModel'
+        '400':
+          $ref: '#/components/responses/OutputMissingIdError'
+        '404':
+          $ref: '#/components/responses/SceneNotFoundError'
+    delete:
+      summary: Delete scene
+      tags:
+        - Scenes
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Scene removed
+        '400':
+          $ref: '#/components/responses/OutputMissingIdError'
+        '404':
+          $ref: '#/components/responses/SceneNotFoundError'
+  /registries/outputs:
+    get:
+      summary: Get registered output types
+      tags:
+        - Registries
+      responses:
+        '200':
+          $ref: '#/components/responses/OutputRegistryResponseModel'
+  /registries/effects:
+    get:
+      summary: Get registered effects
+      tags:
+        - Registries
+      responses:
+        '200':
+          $ref: '#/components/responses/EffectRegistryResponseModel'
+components:
+  responses:
+    OutputMissingIdError:
+      description: Missing id
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              exception:
+                type: string
+                nullable: true
+                example: null
+              message:
+                type: string
+                example: Missing or malformed id
+    OutputNotFoundError:
+      description: Output not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              exception:
+                type: string
+                nullable: true
+                example: null
+              message:
+                type: string
+                example: No output with id $id
+    OutputResponseModel:
+      description: Output model
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OutputResponseModel'
+    OutputRegistryResponseModel:
+      description: Output identifier
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/OutputIdentifier'
+    SceneResponseModel:
+      description: Scene model
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SceneResponseModel'
+    SceneNotFoundError:
+      description: Scene not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              exception:
+                type: string
+                nullable: true
+                example: null
+              message:
+                type: string
+                example: No scene with id $id
+    EffectRegistryResponseModel:
+      description: Effect registry response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Rainbow
+                category:
+                  $ref: '#/components/schemas/EffectCategories'
+  schemas:
+    OutputRequestModel:
+      type: object
+      required:
+        - identifier
+      properties:
+        identifier:
+          $ref: '#/components/schemas/OutputIdentifier'
+        properties:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/SerialOutputProperties'
+    OutputResponseModel:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique UUID
+          example: 82d85de8-aed3-4e5d-8665-28efef6178fa
+        identifier:
+          $ref: '#/components/schemas/OutputIdentifier'
+        properties:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/SerialOutputProperties'
+    OutputIdentifier:
+      type: string
+      enum:
+        - serial_glediator
+        - serial_adalight
+        - serial_tpm2
+    BaseOutputProperties:
+      type: object
+      properties:
+        pixels:
+          type: integer
+          example: 60
+        name:
+          type: string
+          description: User defined output name.
+          example: My Output
+        color_order:
+          $ref: '#/components/schemas/ColorOrder'
+        gamma_correction:
+          type: boolean
+    SerialOutputProperties:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseOutputProperties'
+        - properties:
+            baud_rate:
+              type: integer
+              example: 1000000
+            port_descriptor:
+              type: string
+              nullable: true
+              description: Serial Port name.
+              example: COM5
+    ColorOrder:
+      type: string
+      enum:
+        - RGB
+        - RBG
+        - GRB
+        - GBR
+        - BRG
+        - BGR
+        - WRGB
+        - WRBG
+        - WGRB
+        - WGBR
+        - WBRG
+        - WBGR
+        - RWGB
+        - RWBG
+        - RGWB
+        - RGBW
+        - RBWG
+        - RBGW
+        - GWRB
+        - GWBR
+        - GRWB
+        - GRBW
+        - GBWR
+        - GBRW
+        - BWRG
+        - BWGR
+        - BRWG
+        - BRGW
+        - BGWR
+        - BGRW
+    EffectCategories:
+      type: string
+      enum:
+        - Animation
+        - MusicVisualizer
+    SceneEntry:
+      type: object
+      required:
+        - outputId
+        - pixelMapping
+      properties:
+        outputId:
+          type: string
+          example: 82d85de8-aed3-4e5d-8665-28efef6178fa
+        pixelMapping:
+          type: array
+          example:
+            - 9
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 0
+          items:
+            type: integer
+    SceneRequestModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: My Scene
+        loopInterval:
+          type: integer
+          format: int64
+          example: 30
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SceneEntry'
+        pixelCount:
+          type: integer
+          example: 10
+    SceneResponseModel:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 68a4ce21-3947-49a8-afe0-31f8ed84357d
+        name:
+          type: string
+          example: My Scene
+        loopInterval:
+          type: integer
+          format: int64
+          example: 30
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SceneEntry'
+        pixelCount:
+          type: integer
+          example: 10
