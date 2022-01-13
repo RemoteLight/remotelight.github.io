@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RemoteLight API Documentation</title>
+    <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <style>
+        elements-api {
+            display: block;
+            height: 100vh;
+        }
+
+        body {
+            background-color: var(--color-canvas);
+        }
+
+        .icon {
+            height: 100%;
+            width: 100%;
+            background-color: var(--color-primary);
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            padding: 5px;
+            background-color: var(--color-canvas-50);
+            border-radius: 50%;
+            transition: transform 0.2s ease-out;
+            cursor: pointer;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.25);
+        }
+
+        #theme-switcher {
+            position: fixed;
+            width: 1.7em;
+            height: 1.7em;
+            right: 25px;
+            z-index: 100;
+        }
+
+        #theme-switcher .icon {
+            mask-image: url("./assets/moon.svg");
+        }
+
+        #menu-toggle {
+            display: none;
+            z-index: 200;
+            right: 25px;
+            width: 2.5em;
+            height: 2.5em;
+        }
+
+        #menu-toggle .icon {
+            mask-image: url("./assets/menu.svg");
+        }
+
+        html[data-theme="dark"] #theme-switcher .icon {
+            mask-image: url("./assets/sunny.svg");
+        }
+
+        html[data-theme="dark"] .token.string {
+            color: rgb(165, 214, 255) !important;
+        }
+
+        html[data-theme="dark"] .token.punctuation {
+            color: var(--color-text-paragraph) !important;
+        }
+
+        html[data-theme="dark"] .token.number {
+            color: rgb(247, 140, 108) !important;
+        }
+
+        html[data-theme="dark"] .token.property {
+            color: rgb(128, 203, 196) !important;
+        }
+
+        html[data-theme="dark"] .token.boolean {
+            color: rgb(121, 192, 255) !important;
+        }
+
+        /*
+         * Mobile Layout Support
+         */
+        @media screen and (max-width: 1100px) {
+            .sl-elements-api > .sl-bg-canvas-100 {
+                transform: translateX(-100%);
+                position: absolute;
+                z-index: 150;
+                transition: transform 0.2s ease-out;
+            }
+
+            .sl-elements-api > .sl-bg-canvas-100.open {
+                transform: translateX(0);
+            }
+
+            #menu-toggle {
+                display: block;
+            }
+
+            #theme-switcher {
+                right: 0;
+                left: 25px;
+            }
+
+            .sl-elements-api > .sl-bg-canvas {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .sl-text-heading {
+                word-break: break-all;
+            }
+        }
+
+        /*
+         * Wrap example/try-it
+         */
+        @media screen and (max-width: 800px) {
+            .HttpOperation > .sl-flex,
+            .Model > .sl-flex {
+                flex-direction: column;
+            }
+
+            .HttpOperation > .sl-flex > div,
+            .Model > .sl-flex > div {
+                width: 100%;
+            }
+
+            .HttpOperation > .sl-flex > .sl-relative,
+            .Model > .sl-flex > .sl-relative {
+                margin-top: 24px;
+                margin-left: 0;
+            }
+        }
+
+        /*
+         * Reduce content margin
+         */
+        @media screen and (max-width: 1500px) and (min-width: 1100px) {
+            .sl-elements-api > .sl-bg-canvas {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+    </style>
+    <script>
+        /*
+         * Theme Logic
+         */
+        function toggleTheme(theme) {
+            if (theme == null && localStorage.getItem("theme") == "dark") {
+                theme = "light"
+            } else if (theme == null) {
+                theme = "dark"
+            }
+            document.documentElement.setAttribute("data-theme", theme)
+            localStorage.setItem("theme", theme)
+        }
+        if (localStorage.getItem("theme") == null && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            toggleTheme("dark")
+        } else {
+            toggleTheme(localStorage.getItem("theme"));
+        }
+
+        /*
+         * Mobile Menu Logic
+         */
+        function toggleMenu(open) {
+            const menu = document.querySelector(".sl-elements-api > .sl-bg-canvas-100");
+            if (open == null) {
+                menu.classList.toggle("open");
+            } else if (open) {
+                menu.classList.add("open");
+            } else {
+                menu.classList.remove("open");
+            }
+        }
+        // close menu on menu item click
+        document.addEventListener("click", e => {
+            if (e.target.closest(".ElementsTableOfContentsItem")) {
+                toggleMenu(false)
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <elements-api apiDescriptionUrl="./remotelight.bundled.yaml" router="hash" hideInternal="true" />
+
+    <div id="theme-switcher" class="floating-btn" onclick="toggleTheme()">
+        <div class="icon"></div>
+    </div>
+    <div id="menu-toggle" class="floating-btn" onclick="toggleMenu()">
+        <div class="icon"></div>
+    </div>
+</body>
+
+</html>
